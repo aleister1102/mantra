@@ -70,12 +70,16 @@ func req(url string) {
 	r, err := httpclient.Do(req)
 	if err != nil {
 		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Unable to make a request for "+url+"\033[37m")
+		// Print the error
+		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Error: "+err.Error()+"\033[37m")
 		return
 	}
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Unable to read the body of "+url+"\033[37m")
+		// Print the error
+		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Error: "+err.Error()+"\033[37m")
 		return
 	}
 	strbody := string(body)
@@ -84,6 +88,9 @@ func req(url string) {
 		match := secretPattern.MatchString(strbody)
 		if err != nil {
 			fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Regex Error "+url+"\033[37m")
+			// Print the error
+			fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Error: "+err.Error()+"\033[37m")
+			return
 		}
 		if match {
 			secret := secretPattern.FindString(strbody)
