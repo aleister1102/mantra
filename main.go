@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -22,6 +23,7 @@ var (
 	detailed     *bool
 	secrets      map[string]bool = make(map[string]bool)
 	extrapattern *string
+	timeout      *int
 )
 
 func req(url string) {
@@ -52,7 +54,11 @@ func req(url string) {
 	transp := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	httpclient := &http.Client{Transport: transp}
+	// Set timeout for HTTP client
+	httpclient := &http.Client{
+		Transport: transp,
+		Timeout:   time.Duration(*timeout) * time.Second,
+	}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", *ua)
 	req.Header.Set("Cookie", *rc)
@@ -64,11 +70,13 @@ func req(url string) {
 	r, err := httpclient.Do(req)
 	if err != nil {
 		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Unable to make a request for "+url+"\033[37m")
+		return
 	}
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println("\033[31m[-]\033[37m", "\033[37m"+"Unable to read the body of "+url+"\033[37m")
+		return
 	}
 	strbody := string(body)
 
@@ -110,6 +118,7 @@ func init() {
 	detailed = flag.Bool("d", false, "detailed")
 	rc = flag.String("c", "", "cookies")
 	extrapattern = flag.String("ep", "", "extra, custom (regexp) pattern")
+	timeout = flag.Int("to", 30, "timeout in seconds for each URL request")
 }
 
 func banner() {
