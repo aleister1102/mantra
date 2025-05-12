@@ -21,7 +21,7 @@ In summary, this tool is an efficient and accurate solution to help secure your 
 From go:
 
 ```
-go install github.com/Brosck/mantra@latest
+go install github.com/aleister1102/mantra@latest
 ```
 
 From source code:
